@@ -1,0 +1,15 @@
+global:
+  smtp_smarthost: "smtp.sendgrid.net:587"
+  smtp_from: "lourdes.arulsebas@gmail.com"
+  smtp_auth_username: "apikey"
+  smtp_auth_password: "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"
+  smtp_require_tls: true  # Ensure encrypted email transmission
+
+route:
+  receiver: "critical_email"
+
+receivers:
+  - name: "critical_email"
+    email_configs:
+      - to: "arulsebas@gmail.com"
+        require_tls: true

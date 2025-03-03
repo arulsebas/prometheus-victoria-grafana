@@ -1,0 +1,342 @@
+---
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "victoriametrics"
+    static_configs:
+      - targets: ["victoriametrics:8428"]
+
+  - job_name: "pop1"
+    scrape_interval: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_servers_pop1.json
+    metric_relabel_configs:
+      - source_labels: [__name__, device]
+        regex: 'node_network_(.+);(Vti(.+)|imq(.+)|tun(.+)|EdgeTun(.+)|gre(.+))'
+        action: drop
+
+  - job_name: "pop2"
+    scrape_interval: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_servers_pop2.json
+    metric_relabel_configs:
+      - source_labels: [__name__, device]
+        regex: 'node_network_(.+);(Vti(.+)|imq(.+)|tun(.+)|EdgeTun(.+)|gre(.+))'
+        action: drop
+
+  - job_name: "pop3"
+    scrape_interval: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_servers_pop3.json
+    metric_relabel_configs:
+      - source_labels: [__name__, device]
+        regex: 'node_network_(.+);(Vti(.+)|imq(.+)|tun(.+)|EdgeTun(.+)|gre(.+))'
+        action: drop
+
+  - job_name: 'blackbox'
+    scrape_interval: 60s
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_servers_blackbox_pop1.json
+          - /etc/prometheus/targets/target_servers_blackbox_pop2.json
+          - /etc/prometheus/targets/target_servers_blackbox_pop3.json
+
+  - job_name: 'network-blackbox'
+    scrape_interval: 60s
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_ipmi_switchex.json
+
+  - job_name: 'juniper_bgp'
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    metrics_path: /snmp
+    params:
+      module: [bgp]
+      auth: [opsv3user]
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'  # SNMP Exporter Container Address
+
+  - job_name: 'juniper_default'
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [juniper]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'juniper_switch_system_info'
+    scrape_interval: 15m
+    scrape_timeout: 30s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_ipmi_switchex.json
+    metrics_path: /snmp
+    params:
+      module: [juniper_switch_system_info]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'juniper_mx_system_info'
+    scrape_interval: 15m
+    scrape_timeout: 30s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [juniper_mx_system_info]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'all_default'
+    scrape_interval: 180s
+    scrape_timeout: 180s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [ifmib]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+    metric_relabel_configs:
+      - source_labels: [ifName]
+        regex: 'bme0.*|em1.*|lo0.*'
+        action: drop
+      - source_labels: [ifAlias]
+        regex: '(\w+\d)_m1_(\d+\.\d+)_.*'
+        target_label: link_id
+        replacement: '${1}_${2}'
+
+  - job_name: 'ex_ifmib'
+    scrape_interval: 180s
+    scrape_timeout: 180s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_ipmi_switchex.json
+    metrics_path: /snmp
+    params:
+      module: [ifmib]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+    metric_relabel_configs:
+      - source_labels: [ifName]
+        regex: 'bme0.*|em1.*|lo0.*'
+        action: drop
+      - source_labels: [ifAlias]
+        regex: '(\w+\d)_m1_(\d+\.\d+)_.*'
+        target_label: link_id
+        replacement: '${1}_${2}'
+
+  - job_name: 'juniper_storage_utilization'
+    scrape_interval: 180s
+    scrape_timeout: 180s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_ipmi_switchex.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [juniper_storage]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'juniper_alarm'
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_ipmi_switchex.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [juniperalarm]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'juniper_policer'
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_ipmi_switchex.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [juniperpolicer]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'juniperbgp'
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [juniperbgp]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'juniper_rpm'
+    scrape_interval: 20s
+    scrape_timeout: 20s
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/target_pop3_switchqfx.json
+          - /etc/prometheus/targets/target_pop1_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_switchqfx.json
+          - /etc/prometheus/targets/target_pop2_coremx204.json
+          - /etc/prometheus/targets/target_pop3_coremx204.json
+    metrics_path: /snmp
+    params:
+      module: [rpm]
+      auth: [opsv3user]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 'snmp-exporter:9116'
+    metric_relabel_configs:
+      - source_labels: [jnxPingCtlTestName]
+        regex: '(\w+\d)_M1_(\d+.\d+)_.*'
+        target_label: link_id
+        replacement: '${1}_${2}'

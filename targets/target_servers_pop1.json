@@ -1,0 +1,21 @@
+[
+  {
+    "labels": {
+      "dc": "pop1"
+    },
+    "targets": [
+      "ageks1a.pop1:9100",
+      "pronap1a.pop1:9100",
+      "pki1a.pop1:9100",
+      "anmc1.pop1:9100",
+      "shard1.pop1:9100",
+      "eagleeye1.pop1:9100",
+      "myaryaka1.pop1:9100",
+      "quagga1.pop1:9100",
+      "oxidized1a.pop1:9100",
+      "netbox1a.pop1:9100",
+      "misc1a.pop1:9100",
+      "prometheus1a.pop1:9100"
+    ]
+  }
+]

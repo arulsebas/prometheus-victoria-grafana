@@ -1,0 +1,11 @@
+[
+  {
+    "labels": {
+      "dc": "pop3"
+    },
+    "targets": [
+      "core1.pop3",
+      "core2.pop3"
+    ]
+  }
+]

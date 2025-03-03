@@ -1,0 +1,10 @@
+[
+  {
+    "labels": {
+      "dc": "pop2"
+    },
+    "targets": [
+      "sw1.pop2"
+    ]
+  }
+]

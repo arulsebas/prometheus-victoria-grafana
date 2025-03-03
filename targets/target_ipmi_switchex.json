@@ -1,0 +1,10 @@
+[
+  {
+    "labels": {
+      "dc": "ipmi"
+    },
+    "targets": [
+      "sw1.ipmi"
+    ]
+  }
+]

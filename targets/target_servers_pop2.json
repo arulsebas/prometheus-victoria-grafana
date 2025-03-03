@@ -1,0 +1,10 @@
+[
+  {
+    "labels": {
+      "dc": "pop2"
+    },
+    "targets": [
+      "server60.pop2:9100"
+    ]
+  }
+]

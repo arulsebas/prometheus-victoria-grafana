@@ -2,7 +2,7 @@ global:
   smtp_smarthost: "smtp.sendgrid.net:587"
   smtp_from: "lourdes.arulsebas@gmail.com"
   smtp_auth_username: "apikey"
-  smtp_auth_password: "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"
+  smtp_auth_password:"${SMTP_PASSWORD}"
   smtp_require_tls: true  # Ensure encrypted email transmission
 
 route:

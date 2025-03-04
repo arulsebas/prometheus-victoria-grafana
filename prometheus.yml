@@ -4,6 +4,11 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - "alertmanager:9093"
 remote_write:
   - url: "http://victoriametrics:8428/api/v1/write"
 

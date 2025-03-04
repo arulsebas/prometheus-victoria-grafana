@@ -1,8 +1,8 @@
 global:
   smtp_smarthost: "smtp.sendgrid.net:587"
-  smtp_from: "SkunkNet-BLR <lourdes.arulsebas@gmail.com>"  # ✅ Display name set
-  smtp_auth_username: "apikey"  
-  smtp_auth_password: "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"  
+  smtp_from: "lourdes.arulsebas@gmail.com"
+  smtp_auth_username: "apikey"  # ✅ This must remain "apikey"
+  smtp_auth_password: "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"  # ✅ Secure with ENV variable
   smtp_hello: "localhost"
   smtp_require_tls: true
 
@@ -21,23 +21,23 @@ receivers:
   - name: "critical_email"
     email_configs:
       - to: "arulsebas@gmail.com"
-        from: "SkunkNet-BLR <lourdes.arulsebas@gmail.com>"  # ✅ Display name applied
+        from: "lourdes.arulsebas@gmail.com"
         smarthost: "smtp.sendgrid.net:587"
         auth_username: "apikey"
         auth_password: "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"
         headers:
-          From: "SkunkNet-BLR <lourdes.arulsebas@gmail.com>"  # ✅ Applied here too
+          From: "lourdes.arulsebas@gmail.com"
           Subject: "🔥 Critical Alert: {{ template \"email.default.subject\" . }}"
         require_tls: true
 
   - name: "default"
     email_configs:
       - to: "arulsebas@gmail.com"
-        from: "SkunkNet-BLR <lourdes.arulsebas@gmail.com>"  # ✅ Applied here too
+        from: "lourdes.arulsebas@gmail.com"
         smarthost: "smtp.sendgrid.net:587"
         auth_username: "apikey"
         auth_password: "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"
         headers:
-          From: "SkunkNet-BLR <lourdes.arulsebas@gmail.com>"  # ✅ Applied here too
+          From: "lourdes.arulsebas@gmail.com"
           Subject: "⚠️ Alert: {{ template \"email.default.subject\" . }}"
         require_tls: true

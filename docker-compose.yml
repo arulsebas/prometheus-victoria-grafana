@@ -7,6 +7,7 @@ services:
     volumes:
       - prometheus-data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alert_rules_network.yml:/etc/prometheus/alert_rules_network.yml
       - ./targets:/etc/prometheus/targets
       - /etc/hosts:/etc/hosts
     cap_add:
@@ -99,6 +100,7 @@ services:
     command:
       - "--config.file=/etc/alertmanager/alertmanager.yml"
       - "--storage.path=/alertmanager"
+      - "--log.level=debug"
     networks:
       - monitoring
     restart: unless-stopped

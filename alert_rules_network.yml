@@ -3,7 +3,7 @@
 groups:
 - name: Device rules
   rules:
-  - alert: TestAlert
+  - alert: send-alias-email-check
     expr: vector(1)  # This will always be 1, triggering the alert
     for: 1m
     labels:

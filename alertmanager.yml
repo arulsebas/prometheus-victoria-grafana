@@ -6,7 +6,13 @@ global:
   smtp_require_tls: true  # Ensure encrypted email transmission
 
 route:
+  group_by: ['alertname']   # Grouping alerts by name
+  group_wait: 10s           # Wait before sending first alert
+  group_interval: 5m        # Time between sending repeated alerts
+  repeat_interval: 3h       # Prevents alert spamming
   receiver: "critical_email"
+  matchers:
+    - severity="critical"   # 🔹 This ensures only "critical" alerts are sent
 
 receivers:
   - name: "critical_email"
